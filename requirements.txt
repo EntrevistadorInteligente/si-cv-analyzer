@@ -10,7 +10,7 @@ tiktoken==0.6.0
 dependency-injector==4.41.0
 # uncomment to use huggingface llms
 huggingface-hub==0.14.1
-python-multipart==0.0.5
+python-multipart==0.0.7
 confluent-kafka==2.3.0
 # uncomment to use instructor embeddings
 # InstructorEmbedding==1.0.1
