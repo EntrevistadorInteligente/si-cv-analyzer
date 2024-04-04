@@ -1,7 +1,7 @@
 import asyncio
 from fastapi import FastAPI
-from app.application.services.kafka_consumer_service import KafkaConsumerService
-from app.application.services.kafka_producer_service import KafkaProducerService
+from app.infrastructure.jms.kafka_consumer_service import KafkaConsumerService
+from app.infrastructure.jms.kafka_producer_service import KafkaProducerService
 from app.infrastructure.container import Container
 from app.infrastructure.handlers import Handlers
 from app.infrastructure.handlers.listener import process_cv_message

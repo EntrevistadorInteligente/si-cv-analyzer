@@ -5,9 +5,17 @@ import io
 from fastapi import HTTPException
 from langchain.text_splitter import CharacterTextSplitter
 
+from app.domain.entities.hoja_de_vida import HojaDeVidaFactory
+from app.domain.repositories.hoja_de_vida_rag import HojaDeVidaRepository
+
 
 class ExtraerPdf:
-    def ejecutar(self, contents: bytes) -> list[str]:
+
+    def __init__(self, hoja_de_vida_rag_repository: HojaDeVidaRepository):
+        self.hoja_de_vida_rag_repository = hoja_de_vida_rag_repository
+
+    async def ejecutar(self, id_entrevista: str, contents: bytes) -> tuple[list[str], str]:
+
         decoded_bytes = base64.b64decode(contents)
 
         pdf_reader = PdfReader(io.BytesIO(decoded_bytes))
@@ -28,5 +36,10 @@ class ExtraerPdf:
             chunk_overlap=50,
             length_function=len
         )
+
         text_chunks = text_splitter.split_text(text)
-        return text_chunks
+
+        id_hoja_de_vida = await (self.hoja_de_vida_rag_repository.
+                                 add(HojaDeVidaFactory.create(id_entrevista, text_chunks)))
+
+        return text_chunks, id_hoja_de_vida

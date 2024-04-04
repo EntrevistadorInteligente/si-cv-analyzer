@@ -1,14 +1,11 @@
-import datetime
-
 from fastapi import Depends, APIRouter
 
-from app.application.services.kafka_producer_service import KafkaProducerService
+from app.infrastructure.jms.kafka_producer_service import KafkaProducerService
 from app.application.services.procesar_pdf_service import ProcesarPdfService
 from app.infrastructure.container import Container
 from dependency_injector.wiring import Provide, inject
 import json
-from app.infrastructure.schemas.hoja_de_vida_dto import PreparacionEntrevistaDto, MensajeAnalizadorDto, \
-    ProcesoEntrevistaDto, EstadoProcesoEnum
+from app.infrastructure.schemas.hoja_de_vida_dto import PreparacionEntrevistaDto, ProcesoEntrevistaDto, EstadoProcesoEnum
 
 router = APIRouter(
     prefix='/analizador2',
@@ -32,7 +29,8 @@ async def process_cv_message(message,
         evento_entrevista_id=data.get('evento_entrevista_id'),
         hoja_de_vida=data.get('hoja_de_vida')
     )
-    hoja_de_vida_dto = await procesar_pdf_service.execute(preparacion_entrevista_dto.hoja_de_vida)
+    hoja_de_vida_dto = await procesar_pdf_service.execute(preparacion_entrevista_dto.id_entrevista,
+                                                          preparacion_entrevista_dto.hoja_de_vida)
 
     proceso_entrevista = ProcesoEntrevistaDto(
         uuid=preparacion_entrevista_dto.evento_entrevista_id,

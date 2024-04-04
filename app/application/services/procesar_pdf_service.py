@@ -35,8 +35,8 @@ class ProcesarPdfService:
         self.extraer_pdf_service = extraer_pdf_service
         self.generar_modelo_contexto_pdf = generar_modelo_contexto_pdf
 
-    async def execute(self, contents: bytes) -> HojaDeVidaDto:
-        text_chunks = self.extraer_pdf_service.ejecutar(contents)
+    async def execute(self, id_entrevista: str, contents: bytes) -> HojaDeVidaDto:
+        text_chunks, id_hoja_de_vida = await self.extraer_pdf_service.ejecutar(id_entrevista, contents)
         conversation_chain = self.generar_modelo_contexto_pdf.ejecutar(text_chunks)
 
         response = conversation_chain({'question': predefined_questions[0]})
@@ -64,6 +64,7 @@ class ProcesarPdfService:
         datos = {key: re.search(pattern, respuesta_ia).group(1) for key, pattern in patrones.items() if
                  re.search(pattern, respuesta_ia)}
 
+        datos['id_hoja_de_vida_rag'] = id_hoja_de_vida
         # Procesamiento especial para secciones que contienen listas o varios elementos
         datos['tecnologias_principales'] = datos.get('tecnologias_principales', '').split(', ')
         datos['habilidades_tecnicas'] = datos.get('habilidades_tecnicas', '').split(', ')
@@ -86,5 +87,4 @@ class ProcesarPdfService:
             print("Error al validar la información extraída:", e)
             # Manejar el error o crear una respuesta por defecto si es necesario
             hoja_de_vida_dto = HojaDeVidaDto()
-
         return hoja_de_vida_dto

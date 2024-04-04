@@ -1,11 +1,13 @@
 from dependency_injector import containers, providers
 from app.application.services.extraer_pdf import ExtraerPdf
 from app.application.services.generar_modelo_contexto_pdf import GenerarModeloContextoPdf
-from app.application.services.kafka_consumer_service import KafkaConsumerService
-from app.application.services.kafka_producer_service import KafkaProducerService
+from app.infrastructure.jms.kafka_consumer_service import KafkaConsumerService
+from app.infrastructure.jms.kafka_producer_service import KafkaProducerService
 from app.application.services.procesar_pdf_service import ProcesarPdfService
+from app.domain.entities.hoja_de_vida import HojaDeVidaFactory
 from app.infrastructure.handlers import Handlers
 from app.infrastructure.jms import Jms
+from app.infrastructure.repositories.hoja_de_vida_rag import HojaDeVidaMongoRepository
 
 
 class Container(containers.DeclarativeContainer):
@@ -14,8 +16,19 @@ class Container(containers.DeclarativeContainer):
     wiring_config2 = containers.WiringConfiguration(modules=Jms.modules())
 
     # Dependencias
-    extraer_pdf_service = providers.Factory(ExtraerPdf)
     generar_modelo_contexto_pdf = providers.Factory(GenerarModeloContextoPdf)
+
+    # Factories
+    hoja_de_vida_factory = providers.Factory(HojaDeVidaFactory)
+
+    # Repositories
+    hoja_de_vida_rag_repository = providers.Singleton(HojaDeVidaMongoRepository)
+
+    # Servicio que depende de las anteriores
+    extraer_pdf_service = providers.Factory(
+        ExtraerPdf,
+        hoja_de_vida_rag_repository=hoja_de_vida_rag_repository
+    )
 
     # Servicio que depende de las anteriores
     procesar_pdf_service = providers.Factory(
@@ -25,7 +38,6 @@ class Container(containers.DeclarativeContainer):
     )
 
     process_cv_message = providers.Factory(
-        # Pasa las dependencias requeridas por process_cv_message aquí, como:
         procesar_pdf_service=procesar_pdf_service
     )
 
@@ -39,5 +51,4 @@ class Container(containers.DeclarativeContainer):
         KafkaProducerService,
         bootstrap_servers='localhost:9092',
         topic='hojaDeVidaListenerTopic',
-        # Pasa las dependencias necesarias, si las hay.
     )
