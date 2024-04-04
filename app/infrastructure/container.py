@@ -31,13 +31,13 @@ class Container(containers.DeclarativeContainer):
 
     kafka_consumer_service = providers.Singleton(
         KafkaConsumerService,
-        topic='kafkaTopic',
+        topic='hojaDeVidaPublisherTopic',
         # Pasa las dependencias necesarias, si las hay.
     )
 
     kafka_producer_service = providers.Singleton(
         KafkaProducerService,
         bootstrap_servers='localhost:9092',
-        topic='resumeTopic',
+        topic='hojaDeVidaListenerTopic',
         # Pasa las dependencias necesarias, si las hay.
     )
