@@ -43,4 +43,13 @@ class MensajeAnalizadorDto(BaseModel):
     hoja_de_vida: HojaDeVidaDto
 
 
+class Match(BaseModel):
+    id_entrevista: Optional[str] = None
+    match_valido: Optional[bool] = None     # revisar bien el tipo de dato
 
+
+"""
+class HojaDeVidaInvalida(BaseModel):
+    id_entrevista: Optional[str] = None
+    evento_entrevista_id: Optional[str] = None
+"""

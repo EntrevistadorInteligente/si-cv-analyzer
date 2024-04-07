@@ -28,6 +28,6 @@ def create_app():
         await asyncio.create_task(kafka_consumer_service.consume_messages(process_cv_message))
 
         global kafka_producer_service
-        kafka_producer_service = KafkaProducerService('localhost:9092', 'hojaDeVidaListenerTopic')
+        kafka_producer_service = KafkaProducerService('localhost:9092')
         await kafka_producer_service.start()
     return fast_api

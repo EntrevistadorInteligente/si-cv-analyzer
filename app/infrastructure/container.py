@@ -4,6 +4,7 @@ from app.application.services.generar_modelo_contexto_pdf import GenerarModeloCo
 from app.infrastructure.jms.kafka_consumer_service import KafkaConsumerService
 from app.infrastructure.jms.kafka_producer_service import KafkaProducerService
 from app.application.services.procesar_pdf_service import ProcesarPdfService
+from app.application.services.validar_match_service import ValidarMatch
 from app.domain.entities.hoja_de_vida import HojaDeVidaFactory
 from app.infrastructure.handlers import Handlers
 from app.infrastructure.jms import Jms
@@ -35,6 +36,7 @@ class Container(containers.DeclarativeContainer):
         ProcesarPdfService,
         extraer_pdf_service=extraer_pdf_service,
         generar_modelo_contexto_pdf=generar_modelo_contexto_pdf
+        #kafka_producer_service=kafka_producer_service
     )
 
     process_cv_message = providers.Factory(
@@ -49,6 +51,13 @@ class Container(containers.DeclarativeContainer):
 
     kafka_producer_service = providers.Singleton(
         KafkaProducerService,
-        bootstrap_servers='localhost:9092',
-        topic='hojaDeVidaListenerTopic',
+        bootstrap_servers='localhost:9092'
+        #topic='hojaDeVidaListenerTopic',
+    )
+
+    validar_match = providers.Factory(
+        ValidarMatch,
+        hoja_de_vida_rag_repository=hoja_de_vida_rag_repository,
+        generar_modelo_matcheo = generar_modelo_contexto_pdf    # NOT SURE, REVISAR
+
     )

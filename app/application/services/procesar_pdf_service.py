@@ -31,9 +31,11 @@ predefined_questions = [
 class ProcesarPdfService:
 
     def __init__(self, extraer_pdf_service: ExtraerPdf,
-                 generar_modelo_contexto_pdf: GenerarModeloContextoPdf) -> HojaDeVidaDto:
+                 generar_modelo_contexto_pdf: GenerarModeloContextoPdf,
+                 kafka_producer_service) -> HojaDeVidaDto:
         self.extraer_pdf_service = extraer_pdf_service
         self.generar_modelo_contexto_pdf = generar_modelo_contexto_pdf
+        self.kafka_producer_service = kafka_producer_service
 
     async def execute(self, id_entrevista: str, contents: bytes) -> HojaDeVidaDto:
         text_chunks, id_hoja_de_vida = await self.extraer_pdf_service.ejecutar(id_entrevista, contents)
@@ -87,4 +89,7 @@ class ProcesarPdfService:
             print("Error al validar la información extraída:", e)
             # Manejar el error o crear una respuesta por defecto si es necesario
             hoja_de_vida_dto = HojaDeVidaDto()
+
         return hoja_de_vida_dto
+
+
