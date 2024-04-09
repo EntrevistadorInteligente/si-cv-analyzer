@@ -20,4 +20,3 @@ class KafkaProducerService:
             topic,
             json.dumps(message).encode('utf-8')
         )
-

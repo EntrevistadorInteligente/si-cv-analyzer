@@ -23,11 +23,10 @@ class HojaDeVidaMongoRepository(HojaDeVidaRepository):
         result = await collection.insert_one(proceso_entrevista.dict())
         return str(result.inserted_id)
 
-    async def obtener_por_id(self, id_hoja_de_vida: str) -> HojaDeVidaDto:
+    async def obtener_por_id(self, id_hoja_de_vida: str) -> HojaDeVida:
         data = await collection.find_one({'_id': ObjectId(id_hoja_de_vida)})
         if data:
-            hoja_de_vida = HojaDeVidaDto(id_entrevista=data.get('id_entrevista'),
-                                         hoja_de_vida_vect=data.get('hoja_de_vida_vect'))
-            return hoja_de_vida
+            return data
+
         else:
             raise Exception(f'HojaDeVida with id {id_hoja_de_vida} not found')

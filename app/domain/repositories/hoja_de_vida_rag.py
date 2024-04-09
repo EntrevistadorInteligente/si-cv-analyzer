@@ -10,5 +10,5 @@ class HojaDeVidaRepository(ABC):
         raise NotImplemented
 
     @abstractmethod
-    def obtener_por_id(self, id_hoja_de_vida: str) -> HojaDeVidaDto:
+    def obtener_por_id(self, id_hoja_de_vida: str) -> HojaDeVida:
         raise NotImplemented

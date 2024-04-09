@@ -90,6 +90,7 @@ class ProcesarPdfService:
             # Manejar el error o crear una respuesta por defecto si es necesario
             hoja_de_vida_dto = HojaDeVidaDto()
 
-        return hoja_de_vida_dto
+        self.kafka_producer_service.send_message(hoja_de_vida_dto, 'hojaDeVidaTopic')
+
 
 
