@@ -4,16 +4,16 @@ from app.domain.exceptions import PriceIsLessThanOrEqualToZero, StockIsLessThanO
 
 class HojaDeVida:
 
-    def __init__(self, id_entrevista: str, hoja_de_vida_vect: list[str]):
-        self.__validate_price(id_entrevista)
+    def __init__(self, username: str, hoja_de_vida_vect: list[str]):
+        self.__validate_price(username)
         self.__validate_stock(hoja_de_vida_vect)
 
-        self.id_entrevista = id_entrevista
+        self.username = username
         self.hoja_de_vida_vect = hoja_de_vida_vect
 
     @staticmethod
-    def __validate_price(id_entrevista: str):
-        if not id_entrevista:
+    def __validate_price(username: str):
+        if not username:
             raise PriceIsLessThanOrEqualToZero
 
     @staticmethod
@@ -25,5 +25,5 @@ class HojaDeVida:
 class HojaDeVidaFactory:
 
     @staticmethod
-    def create(id_entrevista: str, hoja_de_vida_vect: list[str]) -> HojaDeVida:
-        return HojaDeVida(id_entrevista, hoja_de_vida_vect)
+    def create(username: str, hoja_de_vida_vect: list[str]) -> HojaDeVida:
+        return HojaDeVida(username, hoja_de_vida_vect)
