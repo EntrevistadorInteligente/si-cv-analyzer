@@ -1,8 +1,8 @@
 from dependency_injector import containers, providers
 from app.application.services.extraer_pdf import ExtraerPdf
-from app.application.services.generar_modelo_contexto_pdf import GenerarModeloContextoPdf
-from app.application.services.obtener_hoja_de_vida import ObtenerHojaDeVida
+from app.application.services.generar_modelo_contexto import GenerarModeloContextoPdf
 from app.infrastructure.jms.kafka_consumer_service import KafkaConsumerService
+from app.infrastructure.jms.kafka_match_consumer_service import KafkaMatchConsumerService
 from app.infrastructure.jms.kafka_producer_service import KafkaProducerService
 from app.application.services.procesar_pdf_service import ProcesarPdfService
 from app.application.services.validar_match_service import ValidarMatch
@@ -18,7 +18,7 @@ class Container(containers.DeclarativeContainer):
     wiring_config2 = containers.WiringConfiguration(modules=Jms.modules())
 
     # Dependencias
-    generar_modelo_contexto_pdf = providers.Factory(GenerarModeloContextoPdf)
+    generar_modelo_contexto = providers.Factory(GenerarModeloContextoPdf)
 
     # Factories
     hoja_de_vida_factory = providers.Factory(HojaDeVidaFactory)
@@ -32,20 +32,15 @@ class Container(containers.DeclarativeContainer):
         hoja_de_vida_rag_repository=hoja_de_vida_rag_repository
     )
 
-    # Servicio que depende de las anteriores
-    procesar_pdf_service = providers.Factory(
-        ProcesarPdfService,
-        extraer_pdf_service=extraer_pdf_service,
-        generar_modelo_contexto_pdf=generar_modelo_contexto_pdf
-    )
-
-    process_cv_message = providers.Factory(
-        procesar_pdf_service=procesar_pdf_service
-    )
-
     kafka_consumer_service = providers.Singleton(
         KafkaConsumerService,
         topic='hojaDeVidaPublisherTopic',
+        # Pasa las dependencias necesarias, si las hay.
+    )
+
+    kafka_hoja_vida_valida_consumer_service = providers.Singleton(
+        KafkaMatchConsumerService,
+        topic='hojaDeVidaValidaPublisherTopic2',
         # Pasa las dependencias necesarias, si las hay.
     )
 
@@ -54,14 +49,26 @@ class Container(containers.DeclarativeContainer):
         bootstrap_servers='localhost:9092'
     )
 
+    # Servicio que depende de las anteriores
+    procesar_pdf_service = providers.Factory(
+        ProcesarPdfService,
+        extraer_pdf_service=extraer_pdf_service,
+        generar_modelo_contexto=generar_modelo_contexto,
+        kafka_producer_service=kafka_producer_service
+    )
+
+    process_cv_message = providers.Factory(
+        procesar_pdf_service=procesar_pdf_service
+    )
+
     validar_match = providers.Factory(
         ValidarMatch,
         hoja_de_vida_rag_repository=hoja_de_vida_rag_repository,
-        generar_modelo_matcheo=kafka_producer_service      # REVISAR
-
+        generar_modelo_contexto=generar_modelo_contexto,
+        kafka_producer_service=kafka_producer_service
     )
 
-    obtener_hoja_de_vida = providers.Factory(
-        ObtenerHojaDeVida,
-        hoja_de_vida_rag_repository=hoja_de_vida_rag_repository,
+    validate_match_message = providers.Factory(
+        validar_match=validar_match
     )
+

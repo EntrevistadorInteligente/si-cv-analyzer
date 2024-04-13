@@ -1,5 +1,5 @@
 from app.application.services.extraer_pdf import ExtraerPdf
-from app.application.services.generar_modelo_contexto_pdf import GenerarModeloContextoPdf
+from app.application.services.generar_modelo_contexto import GenerarModeloContextoPdf
 from app.infrastructure.schemas.hoja_de_vida_dto import HojaDeVidaDto
 from fastapi import HTTPException
 import re
@@ -31,15 +31,15 @@ predefined_questions = [
 class ProcesarPdfService:
 
     def __init__(self, extraer_pdf_service: ExtraerPdf,
-                 generar_modelo_contexto_pdf: GenerarModeloContextoPdf,
+                 generar_modelo_contexto: GenerarModeloContextoPdf,
                  kafka_producer_service) -> HojaDeVidaDto:
         self.extraer_pdf_service = extraer_pdf_service
-        self.generar_modelo_contexto_pdf = generar_modelo_contexto_pdf
+        self.generar_modelo_contexto = generar_modelo_contexto
         self.kafka_producer_service = kafka_producer_service
 
-    async def execute(self, id_entrevista: str, contents: bytes) -> HojaDeVidaDto:
-        text_chunks, id_hoja_de_vida = await self.extraer_pdf_service.ejecutar(id_entrevista, contents)
-        conversation_chain = self.generar_modelo_contexto_pdf.ejecutar(text_chunks)
+    async def execute(self, username: str, contents: bytes) -> HojaDeVidaDto:
+        text_chunks, id_hoja_de_vida = await self.extraer_pdf_service.ejecutar(username, contents)
+        conversation_chain = self.generar_modelo_contexto.ejecutar(text_chunks)
 
         response = conversation_chain({'question': predefined_questions[0]})
         respuesta_ia = response['chat_history'][-1].content if response['chat_history'] else ""
@@ -82,6 +82,7 @@ class ProcesarPdfService:
         if otras_habilidades:
             datos['otras_habilidades'] = [hab.strip() for hab in otras_habilidades.split(',')]
 
+        datos['username'] = username
         # Construir el DTO
         try:
             hoja_de_vida_dto = HojaDeVidaDto(**datos)
@@ -90,7 +91,7 @@ class ProcesarPdfService:
             # Manejar el error o crear una respuesta por defecto si es necesario
             hoja_de_vida_dto = HojaDeVidaDto()
 
-        self.kafka_producer_service.send_message(hoja_de_vida_dto, 'hojaDeVidaTopic')
+        await self.kafka_producer_service.send_message(hoja_de_vida_dto.dict(), 'hojaDeVidaListenerTopic')
 
 
 

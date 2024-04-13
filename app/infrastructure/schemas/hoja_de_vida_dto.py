@@ -15,7 +15,6 @@ class HojaDeVidaDto(BaseModel):
     proyectos: List[str] = []
     nivel_ingles: Optional[str] = None
     otras_habilidades: List[str] = []
-    alertas: Optional[str] = None
 
 
 class PreparacionEntrevistaDto(BaseModel):
@@ -45,11 +44,12 @@ class MensajeAnalizadorDto(BaseModel):
 
 class Match(BaseModel):
     id_entrevista: Optional[str] = None
-    match_valido: Optional[bool] = None     # revisar bien el tipo de dato
+    match_valido: Optional[bool] = None
+    razon_validacion: Optional[str] = None
 
 
-"""
-class HojaDeVidaInvalida(BaseModel):
-    id_entrevista: Optional[str] = None
-    evento_entrevista_id: Optional[str] = None
-"""
+class FormularioDto(BaseModel):
+    empresa: Optional[str] = None
+    perfil: Optional[str] = None
+    seniority: Optional[str] = None
+    pais: Optional[str] = None

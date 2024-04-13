@@ -14,7 +14,7 @@ class ExtraerPdf:
     def __init__(self, hoja_de_vida_rag_repository: HojaDeVidaRepository):
         self.hoja_de_vida_rag_repository = hoja_de_vida_rag_repository
 
-    async def ejecutar(self, id_entrevista: str, contents: bytes) -> tuple[list[str], str]:
+    async def ejecutar(self, username: str, contents: bytes) -> tuple[list[str], str]:
 
         decoded_bytes = base64.b64decode(contents)
 
@@ -40,6 +40,6 @@ class ExtraerPdf:
         text_chunks = text_splitter.split_text(text)
 
         id_hoja_de_vida = await (self.hoja_de_vida_rag_repository.
-                                 add(HojaDeVidaFactory.create(id_entrevista, text_chunks)))
+                                 add(HojaDeVidaFactory.create(username, text_chunks)))
 
         return text_chunks, id_hoja_de_vida

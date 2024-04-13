@@ -1,7 +1,7 @@
 from aiokafka import AIOKafkaConsumer
 
 
-class KafkaConsumerService:
+class KafkaMatchConsumerService:
     def __init__(self, topic):
         self.topic = topic
         self.consumer = self.create_consumer()
@@ -19,6 +19,5 @@ class KafkaConsumerService:
                 await callback(message)
         finally:
             await self.consumer.stop()
-
 
 
