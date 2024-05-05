@@ -20,3 +20,5 @@ uvicorn==0.18.3
 pydantic~=1.10.14
 aiokafka~=0.10.0
 motor~=3.4.0
+pre-commit~=3.7.0
+poetry-pre-commit-plugin==0.1.2
