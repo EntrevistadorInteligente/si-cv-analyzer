@@ -2,7 +2,6 @@ from dependency_injector import containers, providers
 from app.application.services.extraer_pdf import ExtraerPdf
 from app.application.services.generar_modelo_contexto import GenerarModeloContextoPdf
 from app.infrastructure.jms.kafka_consumer_service import KafkaConsumerService
-from app.infrastructure.jms.kafka_match_consumer_service import KafkaMatchConsumerService
 from app.infrastructure.jms.kafka_producer_service import KafkaProducerService
 from app.application.services.procesar_pdf_service import ProcesarPdfService
 from app.application.services.validar_match_service import ValidarMatch
@@ -33,20 +32,11 @@ class Container(containers.DeclarativeContainer):
     )
 
     kafka_consumer_service = providers.Singleton(
-        KafkaConsumerService,
-        topic='hojaDeVidaPublisherTopic',
-        # Pasa las dependencias necesarias, si las hay.
-    )
-
-    kafka_hoja_vida_valida_consumer_service = providers.Singleton(
-        KafkaMatchConsumerService,
-        topic='hojaDeVidaValidaPublisherTopic2',
-        # Pasa las dependencias necesarias, si las hay.
+        KafkaConsumerService
     )
 
     kafka_producer_service = providers.Singleton(
-        KafkaProducerService,
-        bootstrap_servers='localhost:9092'
+        KafkaProducerService
     )
 
     # Servicio que depende de las anteriores

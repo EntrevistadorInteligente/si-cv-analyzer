@@ -1,7 +1,7 @@
 import asyncio
 from fastapi import FastAPI
+
 from app.infrastructure.jms.kafka_consumer_service import KafkaConsumerService
-from app.infrastructure.jms.kafka_match_consumer_service import KafkaMatchConsumerService
 from app.infrastructure.jms.kafka_producer_service import KafkaProducerService
 from app.infrastructure.container import Container
 from app.infrastructure.handlers import Handlers
@@ -25,9 +25,9 @@ def create_app():
     @fast_api.on_event("startup")
     async def startup_event():
         kafka_consumer_service = KafkaConsumerService('hojaDeVidaPublisherTopic')
-        kafka_hoja_vida_valida_consumer_service = KafkaMatchConsumerService('hojaDeVidaValidaPublisherTopic2')
+        kafka_hoja_vida_valida_consumer_service = KafkaConsumerService('hojaDeVidaValidaPublisherTopic')
         global kafka_producer_service
-        kafka_producer_service = KafkaProducerService('localhost:9092')
+        kafka_producer_service = KafkaProducerService()
 
         # Iniciar el servicio del productor Kafka.
         await kafka_producer_service.start()
@@ -39,3 +39,4 @@ def create_app():
         # Opcional: Esperar a que ambas tareas estén corriendo si es necesario aquí.
         await asyncio.gather(task1, task2)
     return fast_api
+
