@@ -1,8 +1,11 @@
+import os
+
 from dependency_injector import containers, providers
+from dotenv import load_dotenv
+
 from app.application.services.extraer_pdf import ExtraerPdf
 from app.application.services.generar_modelo_contexto import GenerarModeloContextoPdf
 from app.infrastructure.jms.kafka_consumer_service import KafkaConsumerService
-from app.infrastructure.jms.kafka_match_consumer_service import KafkaMatchConsumerService
 from app.infrastructure.jms.kafka_producer_service import KafkaProducerService
 from app.application.services.procesar_pdf_service import ProcesarPdfService
 from app.application.services.validar_match_service import ValidarMatch
@@ -10,6 +13,9 @@ from app.domain.entities.hoja_de_vida import HojaDeVidaFactory
 from app.infrastructure.handlers import Handlers
 from app.infrastructure.jms import Jms
 from app.infrastructure.repositories.hoja_de_vida_rag import HojaDeVidaMongoRepository
+
+# Carga las variables de entorno al inicio
+load_dotenv()
 
 
 class Container(containers.DeclarativeContainer):
@@ -24,7 +30,20 @@ class Container(containers.DeclarativeContainer):
     hoja_de_vida_factory = providers.Factory(HojaDeVidaFactory)
 
     # Repositories
-    hoja_de_vida_rag_repository = providers.Singleton(HojaDeVidaMongoRepository)
+    # Obtener la URL de MongoDB desde las variables de entorno
+    mongo_url = os.getenv('MONGO_URI')
+    sasl_username_kafka = os.getenv('KAFKA_UPSTAR_USER')
+    sasl_password_kafka = os.getenv('KAFKA_UPSTAR_PASSWORD')
+    bootstrap_servers_kafka = os.getenv('KAFKA_UPSTAR_SERVER_URL')
+
+    # MONGO_URI no esté definida
+    if mongo_url is None:
+        raise ValueError("MONGO_URI environment variable is not set.")
+
+    hoja_de_vida_rag_repository = providers.Factory(
+        HojaDeVidaMongoRepository,
+        mongo_url=mongo_url
+    )
 
     # Servicio que depende de las anteriores
     extraer_pdf_service = providers.Factory(
@@ -34,19 +53,13 @@ class Container(containers.DeclarativeContainer):
 
     kafka_consumer_service = providers.Singleton(
         KafkaConsumerService,
-        topic='hojaDeVidaPublisherTopic',
-        # Pasa las dependencias necesarias, si las hay.
-    )
-
-    kafka_hoja_vida_valida_consumer_service = providers.Singleton(
-        KafkaMatchConsumerService,
-        topic='hojaDeVidaValidaPublisherTopic2',
-        # Pasa las dependencias necesarias, si las hay.
     )
 
     kafka_producer_service = providers.Singleton(
         KafkaProducerService,
-        bootstrap_servers='localhost:9092'
+        sasl_username=sasl_username_kafka,
+        sasl_password=sasl_password_kafka,
+        bootstrap_servers=bootstrap_servers_kafka
     )
 
     # Servicio que depende de las anteriores

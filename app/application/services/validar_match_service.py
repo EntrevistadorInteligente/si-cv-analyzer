@@ -46,6 +46,7 @@ class ValidarMatch:
         return validacion_match
 
     async def extraer_informacion_hoja_de_vida(self, formulario, id_hoja_de_vida_rag):
+
         hoja_de_vida = await self.hoja_de_vida_rag_repository.obtener_por_id(id_hoja_de_vida_rag)
         conversation_chain = self.generar_modelo_contexto.ejecutar(hoja_de_vida.hoja_de_vida_vect)
         predefined_questions = [

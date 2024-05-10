@@ -5,6 +5,7 @@ from enum import Enum
 
 class HojaDeVidaDto(BaseModel):
     id_hoja_de_vida_rag: Optional[str] = None
+    username: Optional[str] = None
     nombre: Optional[str] = None
     perfil: Optional[str] = None
     seniority: Optional[str] = None
