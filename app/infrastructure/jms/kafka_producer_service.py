@@ -27,14 +27,16 @@ class KafkaProducerService:
         await self.producer.start()
 
     async def stop(self):
-        await self.producer.stop()
+        if self.producer:
+            await self.producer.stop()
+            self.producer = None
 
     async def send_message(self, message: dict, topic):
-        await self.producer.start()
-        logger.info("Enviando mensaje a : topic={}, tamanio message={}".format(
-                topic, message))
+        if not self.producer:
+            await self.start()
+        logger.info(f"Enviando mensaje a: topic={topic}, tamaño message={len(json.dumps(message))}")
         await self.producer.send_and_wait(
             topic,
             json.dumps(message).encode('utf-8')
         )
-        logger.info("Enviado")
+        logger.info("Mensaje enviado")
