@@ -37,6 +37,7 @@ def create_app():
                                                       sasl_password_kafka,
                                                       bootstrap_servers_kafka)
         await kafka_consumer_service.start()
+
         kafka_hoja_vida_valida_consumer_service = KafkaConsumerService('hojaDeVidaValidaPublisherTopic',
                                                                        sasl_username_kafka,
                                                                        sasl_password_kafka,

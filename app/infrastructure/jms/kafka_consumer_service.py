@@ -23,7 +23,7 @@ class KafkaConsumerService:
                                 security_protocol='SASL_SSL',
                                 sasl_plain_username=self.sasl_username,
                                 sasl_plain_password=self.sasl_password,
-                                auto_offset_reset='earliest',
+                                auto_offset_reset='latest',
                                 ssl_context=create_ssl_context())
 
     async def start(self):
