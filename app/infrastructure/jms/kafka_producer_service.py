@@ -15,16 +15,18 @@ class KafkaProducerService:
         self.sasl_username = sasl_username
         self.sasl_password = sasl_password
         self.bootstrap_servers = bootstrap_servers
-        self.producer = AIOKafkaProducer(
-            bootstrap_servers=self.bootstrap_servers,
-            sasl_mechanism='SCRAM-SHA-256',
-            security_protocol='SASL_SSL',
-            sasl_plain_username=self.sasl_username,
-            sasl_plain_password=self.sasl_password,
-            ssl_context=create_ssl_context())
+        self.producer = None
 
     async def start(self):
-        await self.producer.start()
+        if not self.producer:
+            self.producer = AIOKafkaProducer(
+                bootstrap_servers=self.bootstrap_servers,
+                sasl_mechanism='SCRAM-SHA-256',
+                security_protocol='SASL_SSL',
+                sasl_plain_username=self.sasl_username,
+                sasl_plain_password=self.sasl_password,
+                ssl_context=create_ssl_context())
+            await self.producer.start()
 
     async def stop(self):
         if self.producer:
