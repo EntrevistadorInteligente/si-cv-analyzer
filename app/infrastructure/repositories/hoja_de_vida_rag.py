@@ -5,14 +5,6 @@ from app.domain.entities.hoja_de_vida import HojaDeVida
 from app.domain.repositories.hoja_de_vida_rag import HojaDeVidaRepository
 from app.infrastructure.schemas.hoja_de_vida_entity import HojaDeVidaEntityRag
 
-# MongoDB connection URL
-# MONGO_URL = ("mongodb+srv://entrevistador:swJTdyxG8pJczD0m@clusterentrevistadoria.rtuhiw6.mongodb.net/?retryWrites=true"
-#             "&w=majority&appName=ClusterEntrevistadorIA")
-# client = AsyncIOMotorClient(MONGO_URL)
-# database = client["analizador_hoja_vida_rag"]
-# collection = database["hoja_vida"]
-
-
 class HojaDeVidaMongoRepository(HojaDeVidaRepository):
     def __init__(self, mongo_url):
         self.mongo_url = mongo_url

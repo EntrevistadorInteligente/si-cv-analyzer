@@ -1,14 +1,14 @@
 from typing import Any
-from langchain.embeddings import OpenAIEmbeddings
-from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
 from dotenv import load_dotenv
-from langchain.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 
 class GenerarModeloContextoPdf:
-    def ejecutar(self, text_chunks: list[str]) -> Any:
+    async def ejecutar(self, text_chunks: list[str]) -> Any:
         load_dotenv()
         # Crear vectorstore
         embeddings = OpenAIEmbeddings()
@@ -17,8 +17,8 @@ class GenerarModeloContextoPdf:
         vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
 
         # Crear conversation chain
-        llm = ChatOpenAI()
-        # llm = HuggingFaceHub(repo_id="google/flan-t5-xxl", model_kwargs={"temperature": 0.5, "max_length": 512})
+        # llm = ChatOpenAI(temperature=0)
+        llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
 
         memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
         conversation_chain = ConversationalRetrievalChain.from_llm(
