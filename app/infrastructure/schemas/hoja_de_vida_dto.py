@@ -54,3 +54,10 @@ class FormularioDto(BaseModel):
     perfil: Optional[str] = None
     seniority: Optional[str] = None
     pais: Optional[str] = None
+
+
+class SolicitudHojaDeVidaDto(BaseModel):
+    username: Optional[str] = None
+    hoja_de_vida: bytes = None
+
+

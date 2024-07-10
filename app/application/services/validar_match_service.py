@@ -48,7 +48,7 @@ class ValidarMatch:
     async def extraer_informacion_hoja_de_vida(self, formulario, id_hoja_de_vida_rag):
 
         hoja_de_vida = await self.hoja_de_vida_rag_repository.obtener_por_id(id_hoja_de_vida_rag)
-        conversation_chain = self.generar_modelo_contexto.ejecutar(hoja_de_vida.hoja_de_vida_vect)
+        conversation_chain = await self.generar_modelo_contexto.ejecutar(hoja_de_vida.hoja_de_vida_vect)
         predefined_questions = [
             "Analiza la siguiente hoja de vida e identifica si es adecuada para el "
             "siguiente puesto de trabajo al que se intenta aplicar: "
