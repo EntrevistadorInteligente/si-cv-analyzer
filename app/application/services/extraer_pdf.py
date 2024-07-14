@@ -1,6 +1,5 @@
 import base64
-
-from PyPDF2 import PdfReader
+import pypdfium2 as pdfium
 import io
 from fastapi import HTTPException
 from langchain.text_splitter import CharacterTextSplitter
@@ -18,12 +17,16 @@ class ExtraerPdf:
 
         decoded_bytes = base64.b64decode(contents)
 
-        pdf_reader = PdfReader(io.BytesIO(decoded_bytes))
+        # Utilizar pypdfium2 para leer el archivo PDF
+        pdf_document = pdfium.PdfDocument(io.BytesIO(decoded_bytes))
 
         # Extraer texto del PDF
         text = ""
-        for page in pdf_reader.pages:
-            text += page.extract_text() or ""
+        for page_num in range(len(pdf_document)):
+            page = pdf_document[page_num]
+            textpage = page.get_textpage()
+            width, height = page.get_size()
+            text += textpage.get_text_bounded(left=0, bottom=0, right=width, top=height)
 
         # Comprobar si se extrajo algún texto
         if not text:

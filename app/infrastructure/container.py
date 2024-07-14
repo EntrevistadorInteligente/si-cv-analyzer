@@ -51,11 +51,11 @@ class Container(containers.DeclarativeContainer):
         hoja_de_vida_rag_repository=hoja_de_vida_rag_repository
     )
 
-    kafka_consumer_service = providers.Singleton(
+    kafka_consumer_service = providers.Factory(
         KafkaConsumerService,
     )
 
-    kafka_producer_service = providers.Singleton(
+    kafka_producer_service = providers.Factory(
         KafkaProducerService,
         sasl_username=sasl_username_kafka,
         sasl_password=sasl_password_kafka,
