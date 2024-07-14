@@ -3,10 +3,11 @@ import pypdfium2 as pdfium
 import io
 from fastapi import HTTPException
 from langchain.text_splitter import CharacterTextSplitter
+import pytesseract
+from pdf2image import convert_from_bytes
 
 from app.domain.entities.hoja_de_vida import HojaDeVidaFactory
 from app.domain.repositories.hoja_de_vida_rag import HojaDeVidaRepository
-
 
 class ExtraerPdf:
 
@@ -17,10 +18,8 @@ class ExtraerPdf:
 
         decoded_bytes = base64.b64decode(contents)
 
-        # Utilizar pypdfium2 para leer el archivo PDF
         pdf_document = pdfium.PdfDocument(io.BytesIO(decoded_bytes))
 
-        # Extraer texto del PDF
         text = ""
         for page_num in range(len(pdf_document)):
             page = pdf_document[page_num]
@@ -28,11 +27,15 @@ class ExtraerPdf:
             width, height = page.get_size()
             text += textpage.get_text_bounded(left=0, bottom=0, right=width, top=height)
 
-        # Comprobar si se extrajo algún texto
+        if len(text) < 100:
+            images = convert_from_bytes(decoded_bytes)
+            text = ""
+            for img in images:
+                text += pytesseract.image_to_string(img)
+
         if not text:
             raise HTTPException(status_code=400, detail="No se pudo extraer texto del PDF")
 
-        # Dividir el texto en chunks
         text_splitter = CharacterTextSplitter(
             separator="\n",
             chunk_size=800,

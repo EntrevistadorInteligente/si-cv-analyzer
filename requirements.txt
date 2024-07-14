@@ -20,3 +20,6 @@ langchain-community~=0.2.6
 langchain-core~=0.2.6
 langchain-openai~=0.1.14
 langchain~=0.2.6
+pytesseract
+pdf2image
+Pillow
