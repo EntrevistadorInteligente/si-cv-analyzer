@@ -1,3 +1,9 @@
+# Ignorar archivos de configuración y dependencias de desarrollo
+requirements-dev.txt
+
+# Ignorar archivo de licencia (opcional)
+LICENSE
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -221,3 +227,5 @@ docs
 .ruff_cache/
 
 *.spec
+
+.pre-commit-config.yaml
