@@ -1,0 +1,2 @@
+poetry-pre-commit-plugin==0.1.2
+pre-commit~=3.7.0

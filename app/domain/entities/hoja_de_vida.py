@@ -1,4 +1,3 @@
-import uuid
 from app.domain.exceptions import PriceIsLessThanOrEqualToZero, StockIsLessThanOrEqualToZero
 
 
