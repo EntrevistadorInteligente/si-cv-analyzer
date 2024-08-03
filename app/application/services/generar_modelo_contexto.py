@@ -11,10 +11,8 @@ class GenerarModeloContextoPdf:
     async def ejecutar(self, text_chunks: list[str]) -> Any:
         load_dotenv()
         # Crear vectorstore
-        embeddings = OpenAIEmbeddings()
-        # embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-xl")
 
-        vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
+        vectorstore = FAISS.from_texts(texts=text_chunks, embedding=OpenAIEmbeddings(model="text-embedding-3-small"))
 
         # Crear conversation chain
         # llm = ChatOpenAI(temperature=0)
