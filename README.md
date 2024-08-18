@@ -1,6 +1,6 @@
 # analizador
 
-
+# prueba
 ## Recomendaciones
 
 Para alinearse a las reglas de desarrollo utilizando vscode, instalar las siguientes extensiones:
