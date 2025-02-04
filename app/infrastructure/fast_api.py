@@ -1,5 +1,7 @@
 import asyncio
 import os
+
+from aiokafka.admin import NewTopic, AIOKafkaAdminClient
 from fastapi import FastAPI
 from dotenv import load_dotenv
 from app.infrastructure.jms.kafka_consumer_service import KafkaConsumerService
@@ -32,6 +34,45 @@ def create_app():
         sasl_password_kafka = os.getenv('KAFKA_UPSTAR_PASSWORD')
         bootstrap_servers_kafka = os.getenv('KAFKA_UPSTAR_SERVER_URL')
 
+        # Crear un cliente de administración de Kafka
+        admin_client = AIOKafkaAdminClient(
+            bootstrap_servers=bootstrap_servers_kafka,
+            # Configuración adicional si usas autenticación o SSL
+            # security_protocol='SASL_SSL',
+            # sasl_mechanism='PLAIN',
+            # sasl_plain_username=sasl_username_kafka,
+            # sasl_plain_password=sasl_password_kafka,
+        )
+
+        await admin_client.start()
+
+        # Definir los tópicos necesarios
+        topics_to_ensure = ['hojaDeVidaPublisherTopic', 'hojaDeVidaValidaPublisherTopic']
+
+        # Obtener la lista de tópicos existentes
+        existing_topics = await admin_client.list_topics()
+
+        # Encontrar los tópicos que necesitan ser creados
+        topics_to_create = []
+        for topic in topics_to_ensure:
+            if topic not in existing_topics:
+                new_topic = NewTopic(
+                    name=topic,
+                    num_partitions=1,
+                    replication_factor=1,  # Ajusta según tu configuración
+                )
+                topics_to_create.append(new_topic)
+
+        # Crear los tópicos si es necesario
+        if topics_to_create:
+            await admin_client.create_topics(new_topics=topics_to_create)
+            print(f"Tópicos creados: {[t.name for t in topics_to_create]}")
+        else:
+            print("Todos los tópicos ya existen")
+
+        await admin_client.stop()
+
+        # Continuar con la configuración de productores y consumidores
         kafka_consumer_service = KafkaConsumerService('hojaDeVidaPublisherTopic',
                                                       sasl_username_kafka,
                                                       sasl_password_kafka,
@@ -49,7 +90,7 @@ def create_app():
         await kafka_producer_service.start()
         print("Kafka producer service started")
 
-        # Iniciar consumidores de Kafka en tareas asincrónicas separadas
+        # Iniciar los consumidores de Kafka en tareas asíncronas separadas
         await asyncio.create_task(kafka_consumer_service.start())
         asyncio.create_task(kafka_feedback_consumer_service.start())
         asyncio.create_task(kafka_consumer_service.consume_messages(process_cv_message))

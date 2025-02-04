@@ -2,8 +2,8 @@ aiokafka==0.11.0
 dependency_injector==4.41.0
 faiss-cpu==1.8.0
 fastapi~=0.109.0
-langchain==0.2.8
-langchain_community==0.2.7
+langchain==0.3.1
+langchain_community==0.3.1
 langchain_google_genai==1.0.7
 langchain_openai==0.1.16
 motor==3.5.1
@@ -14,3 +14,4 @@ pypdfium2==4.30.0
 pytesseract==0.3.10
 python-dotenv==1.0.1
 uvicorn==0.18.3
+dependency_injector
