@@ -12,15 +12,13 @@ logger = logging.getLogger(__name__)
 
 class KafkaProducerService:
     def __init__(self, sasl_username, sasl_password, bootstrap_servers):
-        self.sasl_username = sasl_username
-        self.sasl_password = sasl_password
         self.bootstrap_servers = bootstrap_servers
         self.producer = None
 
     async def start(self):
         if not self.producer:
             self.producer = AIOKafkaProducer(
-                bootstrap_servers=self.bootstrap_servers)
+                bootstrap_servers="localhost:9092")
             await self.producer.start()
 
     async def stop(self):

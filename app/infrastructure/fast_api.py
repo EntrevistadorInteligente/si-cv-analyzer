@@ -32,7 +32,7 @@ def create_app():
     async def startup_event():
         sasl_username_kafka = os.getenv('KAFKA_UPSTAR_USER')
         sasl_password_kafka = os.getenv('KAFKA_UPSTAR_PASSWORD')
-        bootstrap_servers_kafka = os.getenv('KAFKA_UPSTAR_SERVER_URL')
+        bootstrap_servers_kafka = os.getenv('KAFKA_SERVER')
 
         # Crear un cliente de administración de Kafka
         admin_client = AIOKafkaAdminClient(
@@ -70,7 +70,7 @@ def create_app():
         else:
             print("Todos los tópicos ya existen")
 
-        await admin_client.stop()
+        #await admin_client.stop()
 
         # Continuar con la configuración de productores y consumidores
         kafka_consumer_service = KafkaConsumerService('hojaDeVidaPublisherTopic',

@@ -20,7 +20,7 @@ class ValidarMatch:
 
         validacion_match = await self.generar_validacion_puesto(id_entrevista, respuesta_ia)
         # Revisar hojaDeVidaListenerTopic
-        await self.kafka_producer_service.send_message(validacion_match.dict(), 'hojaDeVidaValidaListenerTopic')
+        await self.kafka_producer_service.send_message(validacion_match.model_dump(), 'hojaDeVidaValidaListenerTopic')
 
     async def generar_validacion_puesto(self, id_entrevista, respuesta_ia):
         # Patrones de expresiones regulares para cada sección
